@@ -1,0 +1,8 @@
+밥먹기 - (dog_eat1.png + dog_eat2.png)
+간식먹기 - (dog_snack1.png + dog_snack2.png)
+선택되었을시 꼬리 살랑 - (dog_tail1.png + dog_tail2.png)
+샤워하기 - (dog_shower1.png + dog_shower2.png)
+놀아주기 - (dog_happy1.png + dog_shut2.png)
+잘 모르겠습니다 - (dogdontknow1.png + dogdontknow2.png)
+더러워진 모습 - (dog_dirt.png)
+대답모션 - (dog.png + dog_shut.png)

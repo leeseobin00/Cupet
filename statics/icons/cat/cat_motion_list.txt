@@ -1,0 +1,8 @@
+밥먹기 - (cat_eat1.png + cat_eat2.png)
+간식먹기 - (cat_snack1.png + cat_snack2.png)
+선택시 - (cat_tail1.png + cat_basic.png)
+샤워하기 - (cat_shower1.png + cat_shower2.png)
+놀아주기 - (cat_happy1.png + cat_happy2.png)
+잘 모르겠습니다 - (catdontknow.png)
+더러워진 모습 - (cat_dirt.png)
+대답모션 - (cat_mouse.png + cat_basic.png)
