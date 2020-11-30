@@ -35,9 +35,9 @@ addr = (host, port)
 
 #background GUI
 win = tk.Tk()
-win.title('Login')
+win.title('Cupet')
 win.geometry('1000x667+100+100')
-win.resizable(True, True)
+win.resizable(False, False)
 
 #Connect to server
 try:
@@ -199,6 +199,10 @@ def select_dog():
     cur.execute('INSERT INTO PetInfo VALUES(?,?,?,?)', (user.id, pet_name_entry.get(), species, 0))
     con.commit()
 
+    pet_image_label.configure(image = basic_pet_image[0])
+    name_label['text'] = pet_name_entry.get()
+    pet.name = pet_name_entry.get()
+
     messagebox.showinfo(title="Completed Setting!",
                         message="Successfully set! \nPet's Name : " + pet_name_entry.get() +
                                 "\nUser's Nick Name : " + user.nickname + "\nYou Selected Dog")
@@ -206,6 +210,8 @@ def select_dog():
 
 #select cat
 #enter the name of the user's nickname and pet name and save it in db
+basic_pet_image = [tk.PhotoImage(file='./statics/icons2/small_dog/sdog_basic.png'),
+                   tk.PhotoImage(file='./statics/icons2/small_cat/scat_basic.png')]
 def select_cat():
     if len(pet_name_entry.get()) < 1 or len(nickname_entry.get()) < 1:
         messagebox.showinfo(title="Error!", message="Enter a value more than 1 letter!")
@@ -221,6 +227,9 @@ def select_cat():
         'CREATE TABLE IF NOT EXISTS PetInfo (user_id TEXT, pet_name TEXT, pet_species Integer, satiety Integer)')
     cur.execute('INSERT INTO PetInfo VALUES(?,?,?,?)', (user.id, pet_name_entry.get(), species, 0))
     con.commit()
+    pet_image_label.configure(image = basic_pet_image[1])
+    name_label['text'] = pet_name_entry.get()
+    pet.name = pet_name_entry.get()
 
     messagebox.showinfo(title="Completed Setting!",
                         message="Successfully set! \nPet's Name : " + pet_name_entry.get() +
@@ -313,6 +322,8 @@ def sendToServer():
         print('상대방 : ', receive_Data.decode('utf-8'))
     else:
         messagebox.showinfo(title="Error!", message="Enter a value more than 1 letter!")
+    input_entry.delete(0,tk.END)
+
 
 #Change in image by buttons
 #샤워 이미지
@@ -656,6 +667,9 @@ def do_play():
 def back_Login():
     ID.delete(0, tk.END)
     PW.delete(0, tk.END)
+    input_PW['state'] = tk.DISABLED
+    input_chk_PW['state'] = tk.DISABLED
+    j_join_button['state'] = tk.DISABLED
     loginFrame.tkraise()
 
 
@@ -793,13 +807,13 @@ pet_select_frame.place(relx=0.5, rely=0.41, relwidth=0.4, relheight=0.07, anchor
 pet_select_label = tk.Label(pet_select_frame, text='펫을 선택해주세용!', bg='#ffff6b', font=mes_font)
 pet_select_label.place(relwidth=1, relheight=1)
 
-dog_select_image_frame = tk.Frame(settingFrame, bd=0)
+dog_select_image_frame = tk.Frame(settingFrame, bd=0, bg='#f2f205')
 dog_select_image_frame.place(x=300, y=350, relwidth=0.19, relheight=0.29, anchor='n')
 
-dog_select_image = tk.PhotoImage(file='./statics/icons2/basic/dog_choice2.png')
+dog_select_image = tk.PhotoImage(file='./statics/dog.png')
 
-dog_select_image_label = tk.Label(dog_select_image_frame, image=dog_select_image, bd=0)
-dog_select_image_label.place(x=0, y=0)
+dog_select_image_label = tk.Label(dog_select_image_frame, image=dog_select_image, bd=0, bg='#f2f205')
+dog_select_image_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 dog_frame = tk.Frame(settingFrame, bg='#83e05c', bd=2)  # dog Frame
 dog_frame.place(x=300, y=550, relwidth=0.15, relheight=0.06, anchor='n')
@@ -807,13 +821,13 @@ dog_frame.place(x=300, y=550, relwidth=0.15, relheight=0.06, anchor='n')
 dog_button = tk.Button(dog_frame, text="강아지", font=mes_font, command=select_dog)
 dog_button.place(relheight=1, relwidth=1)
 
-cat_select_image_frame = tk.Frame(settingFrame, bd=0)
+cat_select_image_frame = tk.Frame(settingFrame, bd=0, bg='#f2f205')
 cat_select_image_frame.place(x=650, y=350, relwidth=0.19, relheight=0.29, anchor='n')
 
-cat_select_image = tk.PhotoImage(file='./statics/icons2/basic/cat_choice2.png')
+cat_select_image = tk.PhotoImage(file='./statics/cat.png')
 
-cat_select_image_label = tk.Label(cat_select_image_frame, image=cat_select_image, bd=0)
-cat_select_image_label.place(x=0, y=0)
+cat_select_image_label = tk.Label(cat_select_image_frame, image=cat_select_image, bd=0, bg='#f2f205')
+cat_select_image_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 cat_frame = tk.Frame(settingFrame, bg='#83e05c', bd=2)  # cat Frame
 cat_frame.place(x=650, y=550, relwidth=0.15, relheight=0.06, anchor='n')
@@ -931,7 +945,10 @@ pet_image_frame.place(x=552, y=302, relwidth=0.149, relheight=0.223, anchor='n')
 
 pet_image = tk.PhotoImage(file='./statics/icons2/dog/dog_basic.png')
 
+#if sizeUp:
 pet_image_label = tk.Label(pet_image_frame, image=pet_image, bg='#f7f71e', bd=0)
+#else:
+#    pet_image_label = tk.Label(pet_image_frame, image=big_pet_images, bg='#f7f71e', bd=0)
 
 pet_image_label.place(x=0, y=0)
 
