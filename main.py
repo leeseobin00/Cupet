@@ -103,7 +103,7 @@ def register():
 
     if input_PW.get() == input_chk_PW.get():
         print((input_ID.get(), input_PW.get(), "None"))
-        cur.execute("INSERT INTO UserInfo VALUES(?, ?, ?)", (input_ID.get(), input_PW.get(), "None"))   
+        cur.execute("INSERT INTO UserInfo VALUES(?, ?, ?)", (input_ID.get(), input_PW.get(), "None"))
         print("Success Register")
         con.commit()
         messagebox.showinfo(title="Register", message="Successfully Registered!")
@@ -119,8 +119,11 @@ def raise_join():
     registerFrame.tkraise()
 
 #image by type of pet
-pet_images = [tk.PhotoImage(file='./statics/icons/dog/dog_basic.png'),
-              tk.PhotoImage(file='./statics/icons/cat/cat_basic.png')]
+big_pet_images = [tk.PhotoImage(file='./statics/icons2/dog/dog_basic.png'),
+            tk.PhotoImage(file='./statics/icons2/cat/cat_basic.png')]
+
+pet_images = [tk.PhotoImage(file='./statics/icons2/small_dog/sdog_basic.png'),
+            tk.PhotoImage(file='./statics/icons2/small_cat/scat_basic.png')]
 
 #login function
 def go_login():
@@ -158,6 +161,9 @@ def go_login():
             pet.satiety = int(cur.fetchone()[0])
             if pet.satiety >= 10:
                 sizeUp = True
+
+            if sizeUp:
+                pet_image_frame.place(x=550, y=252, relwidth=0.195, relheight=0.298, anchor='n')
             # h = pet_images[(spec_num[0] - 1) % 3].height()
             # w = pet_images[(spec_num[0] - 1) % 3].width()
             # pet_images[(spec_num[0] - 1) % 3] = pet_images[(spec_num[0] - 1) % 3].zoom(int(w/40),int(h/40))
@@ -227,56 +233,72 @@ def sendToServer():
 
 #Change in image by buttons
 #샤워 이미지
-dog_shower_image = [tk.PhotoImage(file='./statics/icons/dog/dog_shower1.png'),
-                    tk.PhotoImage(file='./statics/icons/dog/dog_shower2.png'),
-                    tk.PhotoImage(file='./statics/icons/dog/dog_basic.png')]
+dog_shower_image = [tk.PhotoImage(file='./statics/icons2/small_dog/sdog_shower1.png'),
+                    tk.PhotoImage(file='./statics/icons2/small_dog/sdog_shower2.png'),
+                    tk.PhotoImage(file='./statics/icons2/small_dog/sdog_basic.png')]
 
-big_dog_shower_image = [] # 사이즈 커진 강아지에 대한 이미지 저장 리스트 이미지 추가해야됨 (씻기 이미지)
+big_dog_shower_image = [tk.PhotoImage(file='./statics/icons2/dog/dog_shower1.png'),
+                    tk.PhotoImage(file='./statics/icons2/dog/dog_shower2.png'),
+                    tk.PhotoImage(file='./statics/icons2/dog/dog_basic.png')]
 
-cat_shower_image = [tk.PhotoImage(file='./statics/icons/cat/cat_shower1.png'),
-                    tk.PhotoImage(file='./statics/icons/cat/cat_shower2.png'),
-                    tk.PhotoImage(file='./statics/icons/cat/cat_basic.png')]
+cat_shower_image = [tk.PhotoImage(file='./statics/icons2/small_cat/scat_shower1.png'),
+                    tk.PhotoImage(file='./statics/icons2/small_cat/scat_shower2.png'),
+                    tk.PhotoImage(file='./statics/icons2/small_cat/scat_basic.png')]
 
-big_cat_shower_image = [] # 사이즈 커진 고양이에 대한 이미지 저장 리스트 이미지 추가해야됨 (사료먹기 이미지)
+big_cat_shower_image = [tk.PhotoImage(file='./statics/icons2/cat/cat_shower1.png'),
+                    tk.PhotoImage(file='./statics/icons2/cat/cat_shower2.png'),
+                    tk.PhotoImage(file='./statics/icons2/cat/cat_basic.png')]
 
 #밥 먹기 이미지
-dog_eat_image = [tk.PhotoImage(file='./statics/icons/dog/dog_eat1.png'),
-                 tk.PhotoImage(file='./statics/icons/dog/dog_eat2.png'),
-                 tk.PhotoImage(file='./statics/icons/dog/dog_basic.png')]
+dog_eat_image = [tk.PhotoImage(file='./statics/icons2/small_dog/sdog_eat1.png'),
+                 tk.PhotoImage(file='./statics/icons2/small_dog/sdog_eat2.png'),
+                 tk.PhotoImage(file='./statics/icons2/small_dog/sdog_basic.png')]
 
-big_dog_eat_image = []# 사이즈 커진 강아지에 대한 이미지 저장 리스트 이미지 추가해야됨 (사료먹기 이미지)
+big_dog_eat_image = [tk.PhotoImage(file='./statics/icons2/dog/dog_eat1.png'),
+                 tk.PhotoImage(file='./statics/icons2/dog/dog_eat2.png'),
+                 tk.PhotoImage(file='./statics/icons2/dog/dog_basic.png')]
 
-cat_eat_image = [tk.PhotoImage(file='./statics/icons/cat/cat_eat1.png'),
-                 tk.PhotoImage(file='./statics/icons/cat/cat_eat2.png'),
-                 tk.PhotoImage(file='./statics/icons/cat/cat_basic.png')]
+cat_eat_image = [tk.PhotoImage(file='./statics/icons2/small_cat/scat_eat1.png'),
+                 tk.PhotoImage(file='./statics/icons2/small_cat/scat_eat2.png'),
+                 tk.PhotoImage(file='./statics/icons2/small_cat/scat_basic.png')]
 
-big_cat_eat_image = [] # 사이즈 커진 고양이에 대한 이미지 저장 리스트 이미지 추가해야됨 (사료먹기 이미지)
+big_cat_eat_image = [tk.PhotoImage(file='./statics/icons2/cat/cat_eat1.png'),
+                 tk.PhotoImage(file='./statics/icons2/cat/cat_eat2.png'),
+                 tk.PhotoImage(file='./statics/icons2/cat/cat_basic.png')]
 
 #간식 먹기 이미지
-dog_snack_image = [tk.PhotoImage(file='./statics/icons/dog/dog_snack1.png'),
-                   tk.PhotoImage(file='./statics/icons/dog/dog_snack2.png'),
-                   tk.PhotoImage(file='./statics/icons/dog/dog_basic.png')]
+dog_snack_image = [tk.PhotoImage(file='./statics/icons2/small_dog/sdog_snack1.png'),
+                   tk.PhotoImage(file='./statics/icons2/small_dog/sdog_snack2.png'),
+                   tk.PhotoImage(file='./statics/icons2/small_dog/sdog_basic.png')]
 
-big_dog_snack_image = [] # 사이즈 커진 강아지에 대한 이미지 저장 리스트 (간식먹기 이미지)
+big_dog_snack_image = [tk.PhotoImage(file='./statics/icons2/dog/dog_snack1.png'),
+                   tk.PhotoImage(file='./statics/icons2/dog/dog_snack2.png'),
+                   tk.PhotoImage(file='./statics/icons2/dog/dog_basic.png')]
 
-cat_snack_image = [tk.PhotoImage(file='./statics/icons/cat/cat_snack1.png'),
-                   tk.PhotoImage(file='./statics/icons/cat/cat_snack2.png'),
-                   tk.PhotoImage(file='./statics/icons/cat/cat_basic.png')]
+cat_snack_image = [tk.PhotoImage(file='./statics/icons2/small_cat/scat_snack1.png'),
+                   tk.PhotoImage(file='./statics/icons2/small_cat/scat_snack2.png'),
+                   tk.PhotoImage(file='./statics/icons2/small_cat/scat_basic.png')]
 
-big_cat_snack_image = [] # 사이즈 커진 고양이에 대한 이미지 저장 리스트 (간식먹기 이미지)
+big_cat_snack_image = [tk.PhotoImage(file='./statics/icons2/cat/cat_snack1.png'),
+                   tk.PhotoImage(file='./statics/icons2/cat/cat_snack2.png'),
+                   tk.PhotoImage(file='./statics/icons2/cat/cat_basic.png')]
 
 #놀기 이미지
-dog_play_image = [tk.PhotoImage(file='./statics/icons/dog/dog_happy1.png'),
-                  tk.PhotoImage(file='./statics/icons/dog/dog_shut2.png'),
-                  tk.PhotoImage(file='./statics/icons/dog/dog_dirt.png')]
+dog_play_image = [tk.PhotoImage(file='./statics/icons2/small_dog/sdog_happy1.png'),
+                  tk.PhotoImage(file='./statics/icons2/small_dog/sdog_shut2.png'),
+                  tk.PhotoImage(file='./statics/icons2/small_dog/sdog_dirt.png')]
 
-big_dog_play_image = [] # 사이즈 커진 강아지에 대한 이미지 저장 리스트 이미지 추가해야됨 (놀기 이미지)
+big_dog_play_image = [tk.PhotoImage(file='./statics/icons2/dog/dog_happy1.png'),
+                  tk.PhotoImage(file='./statics/icons2/dog/dog_shut2.png'),
+                  tk.PhotoImage(file='./statics/icons2/dog/dog_dirt.png')]
 
-cat_play_image = [tk.PhotoImage(file='./statics/icons/cat/cat_happy1.png'),
-                  tk.PhotoImage(file='./statics/icons/cat/cat_happy2.png'),
-                  tk.PhotoImage(file='./statics/icons/cat/cat_dirt.png')]
+cat_play_image = [tk.PhotoImage(file='./statics/icons2/small_cat/scat_happy1.png'),
+                  tk.PhotoImage(file='./statics/icons2/small_cat/scat_happy2.png'),
+                  tk.PhotoImage(file='./statics/icons2/small_cat/scat_dirt.png')]
 
-big_cat_play_image = [] # 사이즈 커진 고양이에 대한 이미지 저장 리스트 이미지 추가해야됨 (놀기 이미지)
+big_cat_play_image = [tk.PhotoImage(file='./statics/icons2/cat/cat_happy1.png'),
+                  tk.PhotoImage(file='./statics/icons2/cat/cat_happy2.png'),
+                  tk.PhotoImage(file='./statics/icons2/cat/cat_dirt.png')]
 
 
 shower_count = 1
@@ -354,6 +376,7 @@ def do_feed():
             con.commit()
             if pet.satiety >= 10:
                 sizeUp = True
+                pet_image_frame.place(x=550, y=252, relwidth=0.195, relheight=0.298, anchor='n')
 
             if sizeUp:
                 img = big_dog_eat_image[eat_count + 1]
@@ -369,6 +392,7 @@ def do_feed():
             return
         if sizeUp:
             img = big_dog_eat_image[eat_count % 2]
+            pet_image_frame.place(x=550, y=252, relwidth=0.195, relheight=0.298, anchor='n')
         else:
             img = dog_eat_image[eat_count % 2]
         eat_count += 1
@@ -392,6 +416,7 @@ def do_feed():
 
             if sizeUp:
                 img = big_cat_eat_image[eat_count + 1]
+                pet_image_frame.place(x=550, y=252, relwidth=0.195, relheight=0.298, anchor='n')
             else:
                 img = cat_eat_image[eat_count + 1]
 
@@ -403,6 +428,7 @@ def do_feed():
             return
         if sizeUp:
             img = big_cat_eat_image[eat_count % 2]
+            pet_image_frame.place(x=550, y=252, relwidth=0.195, relheight=0.298, anchor='n')
         else:
             img = cat_eat_image[eat_count % 2]
         eat_count += 1
@@ -416,6 +442,7 @@ def do_feed():
 
 snack_count = 1
 
+
 #enter snack button
 def do_snack():
     global snack_count
@@ -427,6 +454,7 @@ def do_snack():
             snack_count = 1
             if sizeUp:
                 img = big_dog_snack_image[snack_count + 1]
+                pet_image_frame.place(x=550, y=252, relwidth=0.195, relheight=0.298, anchor='n')
             else:
                 img = dog_snack_image[snack_count + 1]
             pet_image_label.configure(image=img)
@@ -442,6 +470,7 @@ def do_snack():
             return
         if sizeUp:
             img = big_dog_snack_image[snack_count % 2]
+            pet_image_frame.place(x=550, y=252, relwidth=0.195, relheight=0.298, anchor='n')
         else:
             img = dog_snack_image[snack_count % 2]
         snack_count += 1
@@ -464,16 +493,18 @@ def do_snack():
 
             if sizeUp:
                 img = big_cat_snack_image[snack_count + 1]
+                pet_image_frame.place(x=550, y=252, relwidth=0.195, relheight=0.298, anchor='n')
             else:
                 img = cat_snack_image[snack_count + 1]
             pet_image_label.configure(image=img)
-            shower_button['state'] = tk.NORMAL  
+            shower_button['state'] = tk.NORMAL
             snack_button['state'] = tk.NORMAL
             feed_button['state'] = tk.NORMAL
             play_button['state'] = tk.NORMAL
             return
         if sizeUp:
             img = big_cat_snack_image[snack_count % 2]
+            pet_image_frame.place(x=550, y=252, relwidth=0.195, relheight=0.298, anchor='n')
         else:
             img = cat_snack_image[snack_count % 2]
         snack_count += 1
@@ -483,6 +514,7 @@ def do_snack():
         snack_button['state'] = tk.DISABLED
         feed_button['state'] = tk.DISABLED
         mainFrame.after(300, do_snack)
+
 
 play_count = 1
 
@@ -676,15 +708,30 @@ pet_select_frame.place(relx=0.5, rely=0.41, relwidth=0.4, relheight=0.07, anchor
 pet_select_label = tk.Label(pet_select_frame, text='펫을 선택해주세용!', bg='#ffff6b', font=15)
 pet_select_label.place(relwidth=1, relheight=1)
 
-dog_frame = tk.Frame(settingFrame, bg='#83e05c', bd=2)  # dog Frame
+dog_select_image_frame = tk.Frame(settingFrame, bd=0)
+dog_select_image_frame.place(x=300, y=350, relwidth=0.19, relheight=0.29, anchor='n')
 
-dog_frame.place(x=350, y=500, relwidth=0.15, relheight=0.06, anchor='n')
+dog_select_image = tk.PhotoImage(file='./statics/icons2/basic/dog_choice2.png')
+
+dog_select_image_label = tk.Label(dog_select_image_frame, image=dog_select_image, bd=0)
+dog_select_image_label.place(x=0, y=0)
+
+dog_frame = tk.Frame(settingFrame, bg='#83e05c', bd=2)  # dog Frame
+dog_frame.place(x=300, y=550, relwidth=0.15, relheight=0.06, anchor='n')
 
 dog_button = tk.Button(dog_frame, text="강아지", font=20, command=select_dog)
 dog_button.place(relheight=1, relwidth=1)
 
+cat_select_image_frame = tk.Frame(settingFrame, bd=0)
+cat_select_image_frame.place(x=650, y=350, relwidth=0.19, relheight=0.29, anchor='n')
+
+cat_select_image = tk.PhotoImage(file='./statics/icons2/basic/cat_choice2.png')
+
+cat_select_image_label = tk.Label(cat_select_image_frame, image=cat_select_image, bd=0)
+cat_select_image_label.place(x=0, y=0)
+
 cat_frame = tk.Frame(settingFrame, bg='#83e05c', bd=2)  # cat Frame
-cat_frame.place(x=650, y=500, relwidth=0.15, relheight=0.06, anchor='n')
+cat_frame.place(x=650, y=550, relwidth=0.15, relheight=0.06, anchor='n')
 
 cat_button = tk.Button(cat_frame, text="고양이", font=20, command=select_cat)
 cat_button.place(relheight=1, relwidth=1)
@@ -793,11 +840,16 @@ output_label.place(x=0, y=0)
 
 # pet image
 pet_image_frame = tk.Frame(mainFrame, bg='#f7f71e', bd=0)
-pet_image_frame.place(x=550, y=253, relwidth=0.25, relheight=0.35, anchor='n')
+pet_image_frame.place(x=552, y=302, relwidth=0.149, relheight=0.223, anchor='n')
+#pet_image_frame.place(x=550, y=252, relwidth=0.195, relheight=0.298, anchor='n')
 
-pet_image = tk.PhotoImage(file='./statics/icons/dog/dog_basic.png')
+pet_image = tk.PhotoImage(file='./statics/icons2/dog/dog_basic.png')
 
+#if sizeUp:
 pet_image_label = tk.Label(pet_image_frame, image=pet_image, bg='#f7f71e', bd=0)
+#else: 
+#    pet_image_label = tk.Label(pet_image_frame, image=big_pet_images, bg='#f7f71e', bd=0)
+
 pet_image_label.place(x=0, y=0)
 
 loginFrame.tkraise()
