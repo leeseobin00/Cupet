@@ -1,6 +1,7 @@
 #file name : server.py
 import socket
 import threading
+import random
 
 host = 'localhost'
 port = 9998
@@ -12,27 +13,24 @@ def main(sock):
         try:
             receive_Data = sock.recv(1024).decode('utf-8')
             print('받은 데이터 : ', receive_Data)
+            
         except:
             print(str(addr_info)+"에서 연결이 중지되었습니다.")
             return
 
         translate = list(receive_Data)
-        print(translate)
-        #if ('안' in translate) or ('녕' in translate):
-        #    annimal_said = '안녕! 집사야!'
-        #elif ("배고" in translate) or ('배고파' in translate):
-        #    annimal_said = '배고파!!'
-        #elif ('졸' in translate) or ('피곤' in translate):
-        #    annimal_said = '졸려,,,'
-        #else:
-        #    annimal_said = '잘모르겠어요.'
+        translation = ''.join(translate)
 
-        if str(receive_Data).find('안') >= 0 or  str(receive_Data).find('녕') >= 0:
-            annimal_said = '안녕! 집사야!'
-        elif str(receive_Data).find('배고') >=0:
-            annimal_said = '배고파!!'
-        elif str(receive_Data).find('졸') >= 0 or str(receive_Data).find('피곤') >= 0:
-            annimal_said = '졸려,,,'
+        hello = ['안녕!', '왜불러?', '나 여기있어!', '귀찮게 하지마']
+        hungry = ['배고파!!', '배불러~', '그냥 그래~', '배아파ㅜㅜ']
+        tired = ['졸려...', '나 잘래욤', '피곤해', '아니! 나 놀아줘!', ]
+        
+        if str(translation).find('안') >= 0 or  str(translation).find('녕') >= 0 or str(translation).find("야") >= 0:
+            annimal_said = random.choice(hello)
+        elif str(translation).find('배고') >=0:
+            annimal_said = random.choice(hungry)
+        elif str(translation).find('졸') >= 0 or str(translation).find('피곤') >= 0:
+            annimal_said = random.choice(tired)
         else:
             annimal_said = '잘모르겠어요.'
 
@@ -47,6 +45,7 @@ server_socket.bind(addr)
 server_socket.listen(5)
 
 print('%d번 포트로 접속 대기중...' % port)
+
 while True:
     connection_socket, addr_info = server_socket.accept()
 

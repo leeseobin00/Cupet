@@ -4,6 +4,7 @@ from tkinter import messagebox
 import sqlite3
 import socket
 import random
+import tkinter.font as tkFont
 
 class User:
     def __init__(self, id_, nickname_):
@@ -61,6 +62,8 @@ feed_message_list = ['아이 맛있어라~!!', '많이 먹고 키 커야지!!', 
 snack_message_list = ['세상에서 제일 맛있어요!!', '너무 맛있지만 또 먹으면 살이 쪄요!', '얌얌~! 또 간식을 내놔라!']
 shower_message_list = ['아이 개운해라~!!', '깨끗해진 나의 모습을 봐라~!!', '씻고나니까 더 귀여워진 것 같지!?!']
 play_message_list = ['아이 재미있어라~!!', '재미있게 놀고 나니까 피곤하다!', '룰루날라~! 신나는 놀이 시간~!']
+
+
 
 sizeUp = False # 포만도가 10이상일 때 True 이도록 함 -> True : 몸집이 커져있는 상황을 의미
 
@@ -148,10 +151,7 @@ def go_login():
             user.nickname = nick[0]
             #  label2['text'] = "ID : " + ID.get()
             #  label3['text'] = "NickName :" + nick[0]
-            cur.execute('SELECT pet_species FROM PetInfo WHERE user_id = ?', (ID.get(),))
-            spec_num = cur.fetchone()
-            pet.species = int(spec_num[0])
-            pet_image_label.configure(image=pet_images[(spec_num[0] - 1) % 2])
+
 
             cur.execute('SELECT pet_name FROM PetInfo WHERE user_id=?', (user.id,))
             result = cur.fetchone()
@@ -161,9 +161,15 @@ def go_login():
             pet.satiety = int(cur.fetchone()[0])
             if pet.satiety >= 10:
                 sizeUp = True
+            cur.execute('SELECT pet_species FROM PetInfo WHERE user_id = ?', (ID.get(),))
+            spec_num = cur.fetchone()
+            pet.species = int(spec_num[0])
 
             if sizeUp:
                 pet_image_frame.place(x=550, y=252, relwidth=0.195, relheight=0.298, anchor='n')
+                pet_image_label.configure(image=big_pet_images[(spec_num[0] - 1) % 2])
+            else:
+                pet_image_label.configure(image=pet_images[(spec_num[0] - 1) % 2])
             # h = pet_images[(spec_num[0] - 1) % 3].height()
             # w = pet_images[(spec_num[0] - 1) % 3].width()
             # pet_images[(spec_num[0] - 1) % 3] = pet_images[(spec_num[0] - 1) % 3].zoom(int(w/40),int(h/40))
@@ -222,11 +228,88 @@ def select_cat():
     mainFrame.tkraise()
 
 #communicate between pet and user
+response_small_dog_image = [tk.PhotoImage(file='./statics/icons2/small_dog/sdog_shut.png'),
+                          tk.PhotoImage(file='./statics/icons2/small_dog/sdog_shut.png'),
+                          tk.PhotoImage(file='./statics/icons2/small_dog/sdogdontknow.png')]
+
+response_big_dog_image = [tk.PhotoImage(file='./statics/icons2/dog/dog_shut.png'),
+                          tk.PhotoImage(file='./statics/icons2/dog/dog_basic.png'),
+                          tk.PhotoImage(file='./statics/icons2/dog/dogdontknow.png')]
+
+response_small_cat_image = [tk.PhotoImage(file='./statics/icons2/small_cat/scat_mouse.png'),
+                          tk.PhotoImage(file='./statics/icons2/small_cat/scat_basic.png'),
+                          tk.PhotoImage(file='./statics/icons2/small_cat/scatdontknow.png')]
+
+response_big_cat_image = [tk.PhotoImage(file='./statics/icons2/cat/cat_mouse.png'),
+                          tk.PhotoImage(file='./statics/icons2/cat/cat_basic.png'),
+                          tk.PhotoImage(file='./statics/icons2/cat/catdontknow.png')]
+response_count = 1
+def do_respond(message):
+    global response_count
+    if message.find("잘모르겠") >= 0:
+        if response_count == 6:
+            response_count = 1
+            if sizeUp:
+                if pet.species == 1:
+                    img = response_big_dog_image[response_count]
+                else:
+                    img = response_big_cat_image[response_count]
+            else:
+                if pet.species == 1:
+                    img = response_small_dog_image[response_count]
+                else:
+                    img = response_small_cat_image[response_count]
+            pet_image_label.configure(image = img)
+            return
+        response_count += 1
+        if sizeUp:
+            if pet.species == 1:
+                img = response_big_dog_image[(response_count % 2) + 1]
+            else:
+                img = response_big_cat_image[(response_count % 2) + 1]
+        else:
+            if pet.species == 1:
+                img = response_small_dog_image[(response_count % 2) + 1]
+            else:
+                img = response_small_cat_image[(response_count % 2) + 1]
+        pet_image_label.configure(image=img)
+        mainFrame.after(300,do_respond,message)
+    else:
+        if response_count == 6:
+            response_count = 1
+            if sizeUp:
+                if pet.species == 1:
+                    img = response_big_dog_image[response_count]
+                else:
+                    img = response_big_cat_image[response_count]
+            else:
+                if pet.species == 1:
+                    img = response_small_dog_image[response_count]
+                else:
+                    img = response_small_cat_image[response_count]
+            pet_image_label.configure(image = img)
+            return
+        response_count += 1
+        if sizeUp:
+            if pet.species == 1:
+                img = response_big_dog_image[(response_count % 2)]
+            else:
+                img = response_big_cat_image[(response_count % 2)]
+        else:
+            if pet.species == 1:
+                img = response_small_dog_image[(response_count % 2)]
+            else:
+                img = response_small_cat_image[(response_count % 2)]
+        pet_image_label.configure(image=img)
+        mainFrame.after(300,do_respond,message)
+
+
 def sendToServer():
     if len(input_entry.get()) > 0:
         client_socket.send(input_entry.get().encode('utf-8'))
         receive_Data = client_socket.recv(1024)
         output_label['text'] = receive_Data.decode('utf-8')
+        do_respond(str(receive_Data.decode('utf-8')))
         print('상대방 : ', receive_Data.decode('utf-8'))
     else:
         messagebox.showinfo(title="Error!", message="Enter a value more than 1 letter!")
@@ -348,7 +431,7 @@ def do_shower():
             play_button['state'] = tk.NORMAL
             return
         if sizeUp:
-            img = big_dog_shower_image[shower_count % 2]
+            img = big_cat_shower_image[shower_count % 2]
         else:
             img = cat_shower_image[shower_count % 2]
         shower_count += 1
@@ -579,6 +662,8 @@ def back_Login():
 user = User("#", "#")
 pet = Pet("$", 0, 0)
 
+mes_font = tkFont.Font(family ='Arial', size= 15 , weight = 'bold') # Font of Letter
+
 # Login Frame (로그인 창) -----------------------------------------------------
 
 loginFrame = tk.Frame(win)
@@ -594,7 +679,7 @@ background_label.place(relwidth=1, relheight=1)
 fra1_1 = tk.Frame(loginFrame, bg='#83e05c', bd=2)
 fra1_1.place(relx=0.5, rely=0.57, relwidth=0.4, relheight=0.08, anchor='n')
 
-text_ID = tk.Label(fra1_1, text='ID')
+text_ID = tk.Label(fra1_1, text='ID', font=mes_font)
 text_ID.place(relwidth=0.25, relheight=1)
 
 ID = tk.Entry(fra1_1, font=40)
@@ -603,7 +688,7 @@ ID.place(relx=0.3, relwidth=0.75, relheight=1)
 fra1_2 = tk.Frame(loginFrame, bg='#83e05c', bd=2)
 fra1_2.place(relx=0.5, rely=0.67, relwidth=0.4, relheight=0.08, anchor='n')
 
-text_PW = tk.Label(fra1_2, text='PWD')
+text_PW = tk.Label(fra1_2, text='PWD', font=mes_font)
 text_PW.place(relwidth=0.25, relheight=1)
 
 PW = tk.Entry(fra1_2, font=40, show='*')
@@ -612,10 +697,10 @@ PW.place(relx=0.3, relwidth=0.75, relheight=1)
 fra1_3 = tk.Frame(loginFrame, bg='#83e05c', bd=2)
 fra1_3.place(relx=0.5, rely=0.77, relwidth=0.3, relheight=0.07, anchor='n')
 
-join_button = tk.Button(fra1_3, text="join", font=20, command=raise_join)
+join_button = tk.Button(fra1_3, text="join", font=mes_font, command=raise_join)
 join_button.place(relheight=1, relwidth=0.45)
 
-login_button = tk.Button(fra1_3, text="login", font=20, command=go_login)
+login_button = tk.Button(fra1_3, text="login", font=mes_font, command=go_login)
 login_button.place(relx=0.55, relheight=1, relwidth=0.45)
 
 # Join Frame(회원가입 창)-------------------------------------------------
@@ -632,23 +717,23 @@ background_label2.place(relwidth=1, relheight=1)
 fra2_2 = tk.Frame(registerFrame, bg='#83e05c', bd=2)
 fra2_2.place(relx=0.5, rely=0.57, relwidth=0.6, relheight=0.07, anchor='n')
 
-text_input_ID = tk.Label(fra2_2, text='ID')
+text_input_ID = tk.Label(fra2_2, text='ID', font=mes_font)
 text_input_ID.place(relwidth=0.15, relheight=1)
 
 input_ID = tk.Entry(fra2_2, font=40)
 input_ID.place(relx=0.175, relwidth=0.55, relheight=1)
 
-ID_check_button = tk.Button(fra2_2, text="check ID", font=10, command=ID_Check)
+ID_check_button = tk.Button(fra2_2, text="check ID", font=mes_font, command=ID_Check)
 ID_check_button.place(relx=0.75, relheight=1, relwidth=0.25)
 
-back_button = tk.Button(registerFrame, text="Back", font=10, relief="groove", bd=3, command=back_Login)
+back_button = tk.Button(registerFrame, text="Back", font=mes_font, relief="groove", bd=3, command=back_Login)
 back_button.place(relx=0.02, rely=0.03, relheight=0.05, relwidth=0.15)
 
 # input first PWD
 j_frame2 = tk.Frame(registerFrame, bg='#83e05c', bd=2)
 j_frame2.place(relx=0.5, rely=0.67, relwidth=0.6, relheight=0.07, anchor='n')
 
-text_input_PW = tk.Label(j_frame2, text='PWD')
+text_input_PW = tk.Label(j_frame2, text='PWD', font=mes_font)
 text_input_PW.place(relwidth=0.15, relheight=1)
 
 input_PW = tk.Entry(j_frame2, font=40, show='*', state=tk.DISABLED)
@@ -661,13 +746,13 @@ j_label2_1.place(relx=0.75, relheight=1, relwidth=0.25)
 j_frame3 = tk.Frame(registerFrame, bg='#83e05c', bd=2)
 j_frame3.place(relx=0.5, rely=0.77, relwidth=0.6, relheight=0.07, anchor='n')
 
-text_chk_PW = tk.Label(j_frame3, text='RE-PWD')
+text_chk_PW = tk.Label(j_frame3, text='RE-PWD', font=mes_font)
 text_chk_PW.place(relwidth=0.15, relheight=1)
 
 input_chk_PW = tk.Entry(j_frame3, font=40, state=tk.DISABLED, show='*')
 input_chk_PW.place(relx=0.175, relwidth=0.55, relheight=1)
 
-j_join_button = tk.Button(j_frame3, text="join", font=20, command=register, state=tk.DISABLED)
+j_join_button = tk.Button(j_frame3, text="join", font=mes_font, command=register, state=tk.DISABLED)
 j_join_button.place(relx=0.75, relheight=1, relwidth=0.25)
 
 # Setting Frame (초기 설정 창)---------------------------------------------
@@ -685,7 +770,7 @@ background_label3.place(relwidth=1, relheight=1)
 nickname_frame = tk.Frame(settingFrame, bg='#83e05c', bd=2)
 nickname_frame.place(relx=0.5, rely=0.2, relwidth=0.5, relheight=0.07, anchor='n')
 
-nickname_label = tk.Label(nickname_frame, text='nickname')
+nickname_label = tk.Label(nickname_frame, text='nickname', font=mes_font)
 nickname_label.place(relwidth=0.2, relheight=1)
 
 nickname_entry = tk.Entry(nickname_frame, font=40)
@@ -695,7 +780,7 @@ nickname_entry.place(relx=0.25, relwidth=0.75, relheight=1)
 pet_name_frame = tk.Frame(settingFrame, bg='#83e05c', bd=2)
 pet_name_frame.place(relx=0.5, rely=0.3, relwidth=0.5, relheight=0.07, anchor='n')
 
-pet_name_label = tk.Label(pet_name_frame, text='pet name')
+pet_name_label = tk.Label(pet_name_frame, text='pet name', font=mes_font)
 pet_name_label.place(relwidth=0.2, relheight=1)
 
 pet_name_entry = tk.Entry(pet_name_frame, font=40)
@@ -705,7 +790,7 @@ pet_name_entry.place(relx=0.25, relwidth=0.75, relheight=1)
 pet_select_frame = tk.Frame(settingFrame, bg='#f2f205', bd=2)
 pet_select_frame.place(relx=0.5, rely=0.41, relwidth=0.4, relheight=0.07, anchor='n')
 
-pet_select_label = tk.Label(pet_select_frame, text='펫을 선택해주세용!', bg='#ffff6b', font=15)
+pet_select_label = tk.Label(pet_select_frame, text='펫을 선택해주세용!', bg='#ffff6b', font=mes_font)
 pet_select_label.place(relwidth=1, relheight=1)
 
 dog_select_image_frame = tk.Frame(settingFrame, bd=0)
@@ -719,7 +804,7 @@ dog_select_image_label.place(x=0, y=0)
 dog_frame = tk.Frame(settingFrame, bg='#83e05c', bd=2)  # dog Frame
 dog_frame.place(x=300, y=550, relwidth=0.15, relheight=0.06, anchor='n')
 
-dog_button = tk.Button(dog_frame, text="강아지", font=20, command=select_dog)
+dog_button = tk.Button(dog_frame, text="강아지", font=mes_font, command=select_dog)
 dog_button.place(relheight=1, relwidth=1)
 
 cat_select_image_frame = tk.Frame(settingFrame, bd=0)
@@ -733,7 +818,7 @@ cat_select_image_label.place(x=0, y=0)
 cat_frame = tk.Frame(settingFrame, bg='#83e05c', bd=2)  # cat Frame
 cat_frame.place(x=650, y=550, relwidth=0.15, relheight=0.06, anchor='n')
 
-cat_button = tk.Button(cat_frame, text="고양이", font=20, command=select_cat)
+cat_button = tk.Button(cat_frame, text="고양이", font=mes_font, command=select_cat)
 cat_button.place(relheight=1, relwidth=1)
 
 # sns Main Frame(메인 화면 창)-------------------------------
@@ -762,7 +847,7 @@ feed_image_label.place(x=0, y=0)
 feed_frame = tk.Frame(mainFrame, bd=0)
 feed_frame.place(x=97, y=152, relwidth=0.1, relheight=0.06, anchor='n')
 
-feed_button = tk.Button(feed_frame, text="사료", font=20, bg='#f5f56e', command=do_feed)
+feed_button = tk.Button(feed_frame, text="사료", font=mes_font, bg='#f5f56e', command=do_feed)
 feed_button.place(relheight=1, relwidth=1)
 
 # snake image
@@ -778,7 +863,7 @@ snack_image_label.place(x=0, y=0)
 snack_frame = tk.Frame(mainFrame, bd=0)
 snack_frame.place(x=97, y=310, relwidth=0.1, relheight=0.06, anchor='n')
 
-snack_button = tk.Button(snack_frame, text="간식", font=20, bg='#f5f56e', command=do_snack)
+snack_button = tk.Button(snack_frame, text="간식", font=mes_font, bg='#f5f56e', command=do_snack)
 snack_button.place(relheight=1, relwidth=1)
 
 # shower image
@@ -794,7 +879,7 @@ shower_image_label.place(x=0, y=0)
 shower_frame = tk.Frame(mainFrame, bd=0)
 shower_frame.place(x=97, y=455, relwidth=0.1, relheight=0.06, anchor='n')
 
-shower_button = tk.Button(shower_frame, text="샤워", font=20, bg='#f5f56e', command=do_shower)
+shower_button = tk.Button(shower_frame, text="샤워", font=mes_font, bg='#f5f56e', command=do_shower)
 shower_button.place(relheight=1, relwidth=1)
 
 # play image
@@ -810,15 +895,16 @@ play_image_label.place(x=0, y=0)
 play_frame = tk.Frame(mainFrame, bd=0)
 play_frame.place(x=97, y=605, relwidth=0.1, relheight=0.06, anchor='n')
 
-play_button = tk.Button(play_frame, text="놀기", font=50, bg='#f5f56e', command=do_play)
+play_button = tk.Button(play_frame, text="놀기", font=mes_font, bg='#f5f56e', command=do_play)
 play_button.place(relheight=1, relwidth=1)
+
 
 # pet name
 pet_name_frame = tk.Frame(mainFrame, bd=2, bg='#f7f71e')
 pet_name_frame.place(x=455, y=170, relwidth=0.1, relheight=0.07)
 
-name_label = tk.Label(pet_name_frame, text='이름', font=11, bg='white')
-name_label.place(x=0, y=0)
+name_label = tk.Label(pet_name_frame, text='이름', font=mes_font, bg='white')
+name_label.place(x=0, y=0, relwidth= 1, relheight = 1)
 
 # input from user
 input_frame = tk.Frame(mainFrame, bd=2, bg='#f7f71e')
@@ -827,7 +913,7 @@ input_frame.place(x=200, y=550, relwidth=0.75, relheight=0.07)
 input_entry = tk.Entry(input_frame, font=40)
 input_entry.place(relwidth=0.8, relheight=1)
 
-enter = tk.Button(input_frame, text="전송", font=20, relief="solid", borderwidth=4, bg='#f5f56e', command=sendToServer)
+enter = tk.Button(input_frame, text="전송", font=mes_font, relief="solid", borderwidth=4, bg='#f5f56e', command=sendToServer)
 enter.place(relx=0.825, relheight=1, relwidth=0.175)
 
 # output from pet
@@ -835,8 +921,8 @@ output_frame = tk.Frame(mainFrame, bd=2, bg='#f7f71e')
 output_frame.place(relx=0.24, rely=0.12, relwidth=0.5, relheight=0.07)
 
 output_text = '아이 신나~!'  # server로부터 받은 string으로 변경
-output_label = tk.Label(output_frame, text=output_text, font=11, bg='white')
-output_label.place(x=0, y=0)
+output_label = tk.Label(output_frame, text=output_text, font=mes_font, bg='white')
+output_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 # pet image
 pet_image_frame = tk.Frame(mainFrame, bg='#f7f71e', bd=0)
@@ -845,10 +931,7 @@ pet_image_frame.place(x=552, y=302, relwidth=0.149, relheight=0.223, anchor='n')
 
 pet_image = tk.PhotoImage(file='./statics/icons2/dog/dog_basic.png')
 
-#if sizeUp:
 pet_image_label = tk.Label(pet_image_frame, image=pet_image, bg='#f7f71e', bd=0)
-#else: 
-#    pet_image_label = tk.Label(pet_image_frame, image=big_pet_images, bg='#f7f71e', bd=0)
 
 pet_image_label.place(x=0, y=0)
 
