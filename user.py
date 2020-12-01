@@ -1,4 +1,4 @@
-# file name : user.py
+# file name : main.py
 import tkinter as tk
 from tkinter import messagebox
 import sqlite3
@@ -7,6 +7,7 @@ import random
 import tkinter.font as tkFont
 from threading import Thread
 from playsound import playsound
+
 
 class User:
     def __init__(self, id_, nickname_):
@@ -27,6 +28,13 @@ class Pet:
         self.species = species_
 
 
+def musicPlay():
+    playsound('./statics/mainmusic.mp3')
+
+
+music = Thread(target=musicPlay)
+music.daemon = True
+music.start()
 # Set screen size
 Height = 667
 Width = 1000
@@ -45,17 +53,18 @@ win.title('Cupet')
 win.geometry('1000x667+100+100')
 win.resizable(False, False)
 
+# Connect to Chat Server
 try:
     sock_ = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock_.connect((host, chat_port))
-except:
+except Exception as e:
     pass
 
-# Connect to server
+# Connect to Pet Server
 try:
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect(addr)
-except:
+except Exception as e:
     print("Fail to connect to server")
     messagebox.showinfo(title="Error!", message="Can't connect to Server!!")
     win.destroy()  # // Interrupt
@@ -78,12 +87,6 @@ play_message_list = ['아이 재미있어라~!!', '재미있게 놀고 나니까
 
 sizeUp = False  # 포만도가 10이상일 때 True 이도록 함 -> True : 몸집이 커져있는 상황을 의미
 
-def musicPlay():
-    playsound('./statics/mainmusic4.mp3')
-
-music = Thread(target=musicPlay)
-music.daemon = True
-music.start()
 
 # Join membership
 def join():
@@ -162,19 +165,13 @@ def go_login():
     nick = cur.fetchone()
     if len(result) > 0:
         messagebox.showinfo(title="Login!", message="Successfully Completed Login")
-        print('Login Success!')
         if nick[0] == "None":
             user.id = ID.get()
             user.nickname = nick[0]
-            # label2['text'] = "ID : " + ID.get()
-            # label3['text'] = "NickName :" + nick[0]
             settingFrame.tkraise()
         else:
             user.id = ID.get()
             user.nickname = nick[0]
-            #  label2['text'] = "ID : " + ID.get()
-            #  label3['text'] = "NickName :" + nick[0]
-
             cur.execute('SELECT pet_name FROM PetInfo WHERE user_id=?', (user.id,))
             result = cur.fetchone()
             name_label['text'] = result[0]
@@ -192,12 +189,7 @@ def go_login():
                 pet_image_label.configure(image=big_pet_images[(spec_num[0] - 1) % 2])
             else:
                 pet_image_label.configure(image=pet_images[(spec_num[0] - 1) % 2])
-            # h = pet_images[(spec_num[0] - 1) % 3].height()
-            # w = pet_images[(spec_num[0] - 1) % 3].width()
-            # pet_images[(spec_num[0] - 1) % 3] = pet_images[(spec_num[0] - 1) % 3].zoom(int(w/40),int(h/40))
-            # pet.configure(image=pet_images[(spec_num[0] - 1) % 3])
             mainFrame.tkraise()
-
     else:
         messagebox.showinfo(title="Login!", message="Failed to Login!")
 
@@ -225,7 +217,8 @@ def select_dog():
     pet_image_label.configure(image=basic_pet_image[0])
     name_label['text'] = pet_name_entry.get()
     pet.name = pet_name_entry.get()
-
+    pet.species = species
+    pet.satiety = 0
     messagebox.showinfo(title="Completed Setting!",
                         message="Successfully set! \nPet's Name : " + pet_name_entry.get() +
                                 "\nUser's Nick Name : " + user.nickname + "\nYou Selected Dog")
@@ -248,7 +241,8 @@ def select_cat():
     cur.execute('UPDATE UserInfo SET nickname = ? WHERE id = ?', (nickname_entry.get(), user.id))
     user.nickname = nickname_entry.get()
     con.commit()
-
+    pet.species = species
+    pet.satiety = 0
     cur.execute(
         'CREATE TABLE IF NOT EXISTS PetInfo (user_id TEXT, pet_name TEXT, pet_species Integer, satiety Integer)')
     cur.execute('INSERT INTO PetInfo VALUES(?,?,?,?)', (user.id, pet_name_entry.get(), species, 0))
@@ -348,7 +342,6 @@ def sendToServer():
         receive_Data = client_socket.recv(1024)
         output_label['text'] = receive_Data.decode('utf-8')
         do_respond(str(receive_Data.decode('utf-8')))
-        print('상대방 : ', receive_Data.decode('utf-8'))
     else:
         messagebox.showinfo(title="Error!", message="Enter a value more than 1 letter!")
     input_entry.delete(0, tk.END)
@@ -715,23 +708,10 @@ def rcvMsg(sock):
             data = sock.recv(1024)
             if not data:
                 break
-            print(data.decode())
             chat_space.insert(index, data.decode())
             index += 1
-        except:
+        except Exception as e:
             pass
-
-
-# t = Thread(target=rcvMsg, args=(client_socket,))
-# t.daemon = True
-# t.start()
-'''
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        sock.connect((host, port))
-        t = Thread(target=rcvMsg, args=(sock,))
-        t.daemon = True
-        t.start()
-'''
 
 
 def runChat():
@@ -747,15 +727,15 @@ def runChat():
         connect_state = False
     try:
         sock_.send(msg.encode())
-    except:
+    except Exception as e:
         chat_space.insert(0, '연결되어 있지 않습니다!')
+
 
 def connectChat():
     global sock_
     if not connect_state:
         sock_ = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock_.connect((host, chat_port))
-    # sock_.connect((host,chat_port))
     sock_.send(user.nickname.encode())
     t = Thread(target=rcvMsg, args=(sock_,))
     t.daemon = True
@@ -1052,10 +1032,10 @@ send_chat.place(relx=0, rely=0.85, relheight=0.15, relwidth=0.8)
 send_button = tk.Button(chat_space_frame, text='send', bg='white', command=runChat)
 send_button.place(relx=0.8, rely=0.85, relheight=0.15, relwidth=0.2)
 
-connect_button = tk.Button(mainFrame, text='connect',relief='solid',bd=2 ,command=connectChat)
+connect_button = tk.Button(mainFrame, text='connect', relief='solid', bd=2, command=connectChat)
 connect_button.place(x=770, y=385, relwidth=0.23, relheight=0.05)
 
-disconnect_expl = tk.Label(mainFrame,bg='white' ,text='/quit를 입력하면 연결이 종료됩니다.')
+disconnect_expl = tk.Label(mainFrame, bg='white', text='/quit를 입력하면 연결이 종료됩니다.')
 disconnect_expl.place(x=770, y=420, relwidth=0.23, relheight=0.05)
 loginFrame.tkraise()
 
